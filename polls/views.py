@@ -3,12 +3,13 @@
 # @Author: sahildua2305
 # @Date:   2015-12-25 03:17:44
 # @Last Modified by:   sahildua2305
-# @Last Modified time: 2015-12-28 01:18:50
+# @Last Modified time: 2015-12-29 02:58:35
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.views import generic
+from django.utils import timezone
 
 from .models import Question, Choice
 
@@ -18,8 +19,7 @@ class IndexView(generic.ListView):
 
 	def get_queryset(self):
 		""" Return the last five published questions """
-		return Question.objects.order_by('-pub_date')[:5]
-
+		return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
 
 class DetailView(generic.DetailView):
 	model = Question
