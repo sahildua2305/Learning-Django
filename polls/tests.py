@@ -3,7 +3,7 @@
 # @Author: sahildua2305
 # @Date:   2015-12-25 03:17:44
 # @Last Modified by:   Sahil Dua
-# @Last Modified time: 2015-12-29 03:10:36
+# @Last Modified time: 2015-12-29 03:25:43
 
 import datetime
 from django.utils import timezone
@@ -70,6 +70,26 @@ class QuestionViewTests(TestCase):
 			response.context['latest_question_list'],
 			['<Question: Past question 2.>', '<Question: Past question 1.>']
 		)
+
+class QuestionIndexDetailTests(TestCase):
+
+	def test_detail_view_with_a_future_question(self):
+		"""
+		The detail view of a question with a pub_date in the future should
+		return a 404 not found.
+		"""
+		future_question = create_question(question_text='Future question.', days=5)
+		response = self.client.get(reverse('polls:detail', args=(future_question.id,)))
+		self.assertEqual(response.status_code, 404)
+
+	def test_detail_view_with_a_past_question(self):
+		"""
+		The detail view of a question with a pub_date in the past should
+		display the question's text.
+		"""
+		past_question = create_question(question_text='Past Question.', days=-5)
+		response = self.client.get(reverse('polls:detail', args=(past_question.id,)))
+		self.assertContains(response, past_question.question_text, status_code=200)
 
 class QuestionMethodTests(TestCase):
 
